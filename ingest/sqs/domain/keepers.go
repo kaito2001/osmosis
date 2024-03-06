@@ -37,6 +37,8 @@ type BankKeeper interface {
 // ProtorevKeeper is an interface for getting the pool for a denom pair.
 type ProtorevKeeper interface {
 	GetPoolForDenomPair(ctx sdk.Context, baseDenom, denomToMatch string) (uint64, error)
+
+	// GetAllPoolsForDenomPair(ctx sdk.Context) ([]protorevtypes.PoolIDForDenomPair, error)
 }
 
 // PoolManagerKeeper is an interface for the pool manager keeper.
@@ -69,6 +71,12 @@ type PoolManagerKeeper interface {
 		route []poolmanagertypes.SwapAmountOutRoute,
 		tokenOut sdk.Coin,
 	) (tokenInAmount osmomath.Int, err error)
+
+	AllPools(
+		ctx sdk.Context,
+	) ([]poolmanagertypes.PoolI, error)
+
+	GetAllTradingPairTakerFees(ctx sdk.Context) ([]poolmanagertypes.DenomPairTakerFee, error)
 }
 
 // ConcentratedKeeper is an interface for the concentrated keeper.

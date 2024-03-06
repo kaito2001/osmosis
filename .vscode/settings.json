@@ -33,7 +33,7 @@
   "python.formatting.provider": "none",
   "[go][go.mod]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
+        "source.organizeImports": "explicit"
     }
   }
 }

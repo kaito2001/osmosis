@@ -2,8 +2,7 @@ package domain
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/osmosis-labs/sqs/sqsdomain/repository"
+	"github.com/osmosis-labs/sqs/sqsdomain"
 )
 
 // AtomicIngester is an interface that defines the methods for the atomic ingester.
@@ -13,5 +12,5 @@ type AtomicIngester interface {
 	// ProcessBlock processes the block by writing data into a transaction.
 	// Returns error if fails to process.
 	// It does not flush data to sink. The caller must call Exec on the transaction
-	ProcessBlock(ctx sdk.Context, tx repository.Tx) error
+	ProcessBlock(ctx sdk.Context) ([]sqsdomain.PoolI, sqsdomain.TakerFeeMap, error)
 }

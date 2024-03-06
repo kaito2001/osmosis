@@ -3,6 +3,7 @@ package keeper
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	poolmanagertypes "github.com/osmosis-labs/osmosis/v23/x/poolmanager/types"
 	"github.com/osmosis-labs/osmosis/v23/x/protorev/types"
@@ -132,6 +133,37 @@ func (k Keeper) GetPoolForDenomPair(ctx sdk.Context, baseDenom, denomToMatch str
 
 	poolId := sdk.BigEndianToUint64(bz)
 	return poolId, nil
+}
+
+func parse(key []byte, value []byte) (types.PoolIDForDenomPair, error) {
+	keyStr := string(key)
+
+	denoms := strings.Split(keyStr, "|")
+
+	if len(denoms) != 2 {
+		return types.PoolIDForDenomPair{}, fmt.Errorf("failed to parse denom pairs, expected length is 2, got (%d)", len(denoms))
+	}
+
+	denomA := denoms[0]
+	denomB := denoms[1]
+
+	if err := sdk.ValidateDenom(denomA); err != nil {
+		return types.PoolIDForDenomPair{}, err
+	}
+
+	if err := sdk.ValidateDenom(denomB); err != nil {
+		return types.PoolIDForDenomPair{}, err
+	}
+
+	return types.PoolIDForDenomPair{
+		DenomA: denomA,
+		DenomB: denomB,
+		PoolID: sdk.BigEndianToUint64(value),
+	}, nil
+}
+
+func (k Keeper) GetAllPoolsForDenomPair(ctx sdk.Context) ([]types.PoolIDForDenomPair, error) {
+	return osmoutils.GatherValuesFromStorePrefixWithKeyParser(ctx.KVStore(k.storeKey), types.KeyPrefixDenomPairToPool, parse)
 }
 
 // GetPoolForDenomPairNoOrder returns the id of the pool between the two denoms.
